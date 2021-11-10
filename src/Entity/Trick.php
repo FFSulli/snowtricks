@@ -55,11 +55,17 @@ class Trick
      */
     private $trickVideo;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=Tag::class, inversedBy="tricks")
+     */
+    private $tag;
+
     public function __construct()
     {
         $this->comment = new ArrayCollection();
         $this->trickPicture = new ArrayCollection();
         $this->trickVideo = new ArrayCollection();
+        $this->tag = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -201,6 +207,30 @@ class Trick
                 $trickVideo->setTrick(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Tag[]
+     */
+    public function getTag(): Collection
+    {
+        return $this->tag;
+    }
+
+    public function addTag(Tag $tag): self
+    {
+        if (!$this->tag->contains($tag)) {
+            $this->tag[] = $tag;
+        }
+
+        return $this;
+    }
+
+    public function removeTag(Tag $tag): self
+    {
+        $this->tag->removeElement($tag);
 
         return $this;
     }
