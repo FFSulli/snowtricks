@@ -1,0 +1,57 @@
+version: "3.7"
+
+services:
+
+  snowtricks_nginx:
+    container_name: snowtricks_nginx
+    hostname: snowtricks_nginx
+    image: nginx:1.21.3-alpine
+    restart: on-failure
+    volumes:
+      - './public/:/var/www/public:ro'
+      - './docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro'
+    ports:
+      - "8740:80"
+    networks:
+      - snowtricks
+
+  snowtricks_php:
+    container_name: snowtricks_php
+    hostname: snowtricks_php
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    volumes:
+      - .:/var/www:rw
+    restart: on-failure
+    networks:
+      - snowtricks
+
+  snowtricks_db:
+    container_name: snowtricks_db
+    hostname: snowtricks_db
+    image: postgres:13.3
+    environment:
+      POSTGRES_USER: sulli
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: snowtricks
+    ports:
+      - "8741:5432"
+    networks:
+      - snowtricks
+
+  snowtricks_pgadmin:
+    container_name: snowtricks_pgadmin
+    hostname: snowtricks_pgadmin
+    image: docker-registry.aldeis.net:5000/yooda/pgadmin/4:vanilla
+    environment:
+      PGADMIN_DEFAULT_EMAIL: snowtricks@yooda.com
+      PGADMIN_DEFAULT_PASSWORD: azeqsdwxc
+      PGADMIN_LISTEN_PORT: 80
+    ports:
+      - "8742:80"
+    networks:
+      - snowtricks
+
+networks:
+  snowtricks:
